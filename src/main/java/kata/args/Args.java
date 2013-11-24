@@ -13,11 +13,15 @@ public class Args {
 			return arguments;
 		}
 
+		return parseArguments(input);
+	}
+
+	private Map<String, Object> parseArguments(String input) {
+		Map<String, Object> arguments = new HashMap<>();
 		for (String rawArgument : input.split("-")) {
 			String[] parsedArgument = parseArgument(rawArgument);
 			arguments.put(parsedArgument[0], parsedArgument[1].trim());
 		}
-
 		return arguments;
 	}
 
