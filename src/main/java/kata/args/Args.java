@@ -22,11 +22,10 @@ public class Args {
 	}
 
 	private String[] parseArgument(String rawArgument) {
-		String[] parsedArgument = new String[2];
+		String[] parsedArgument = new String[] { "", "" };
 		String[] splittedRawArgument = rawArgument.split("\\s", 2);
 		if (splittedRawArgument.length < 2) {
 			parsedArgument[0] = splittedRawArgument[0];
-			parsedArgument[1] = "";
 		} else {
 			parsedArgument[0] = splittedRawArgument[0];
 			parsedArgument[1] = splittedRawArgument[1];
