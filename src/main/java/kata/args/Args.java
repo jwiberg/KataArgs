@@ -13,17 +13,24 @@ public class Args {
 			return arguments;
 		}
 
-		String[] rawArguments = input.split("-");
-
-		for (int i = 1; i < rawArguments.length; i++) {
-			String[] rawArgument = rawArguments[i].split("\\s", 2);
-			if (rawArgument.length > 1) {
-				arguments.put(rawArgument[0], rawArgument[1].trim());
-			} else {
-				arguments.put(rawArgument[0], "");
-			}
+		for (String rawArgument : input.split("-")) {
+			String[] parsedArgument = parseArgument(rawArgument);
+			arguments.put(parsedArgument[0], parsedArgument[1].trim());
 		}
 
 		return arguments;
+	}
+
+	private String[] parseArgument(String rawArgument) {
+		String[] parsedArgument = new String[2];
+		String[] splittedRawArgument = rawArgument.split("\\s", 2);
+		if (splittedRawArgument.length < 2) {
+			parsedArgument[0] = splittedRawArgument[0];
+			parsedArgument[1] = "";
+		} else {
+			parsedArgument[0] = splittedRawArgument[0];
+			parsedArgument[1] = splittedRawArgument[1];
+		}
+		return parsedArgument;
 	}
 }

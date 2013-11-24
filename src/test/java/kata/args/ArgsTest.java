@@ -38,4 +38,10 @@ public class ArgsTest {
 		String input = "-s string1 string2 -h string12 string22";
 		assertEquals("string12 string22", new Args().parse(input).get("h"));
 	}
+
+	@Test
+	public void stringArgumentWithNoValueIsParsedToEmptyString() {
+		String input = "-s -h string12 string22";
+		assertEquals("", new Args().parse(input).get("s"));
+	}
 }
