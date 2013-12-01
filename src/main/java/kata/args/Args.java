@@ -8,8 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 public class Args {
 	private final Map<String, Class<? extends Object>> schema = new HashMap<>();
 
-	// String schema;
-
 	public Args(String schemaString) throws ClassNotFoundException {
 		String[] splittedSchema = schemaString.split("\\s");
 		for (String schemaItem : splittedSchema) {
@@ -47,16 +45,33 @@ public class Args {
 
 		validateArgumentAgainstSchema(splittedRawArgument);
 
-		if (schema.get(splittedRawArgument[0]).equals(java.lang.String.class)) {
-			if (splittedRawArgument.length < 2) {
-				return new Argument(splittedRawArgument[0], "");
-			} else {
-				return new Argument(splittedRawArgument[0],
-						splittedRawArgument[1].trim());
-			}
+		if (isStringArgument(splittedRawArgument[0])) {
+			return parseStringArgument(splittedRawArgument);
 		} else {
-			return new Argument(splittedRawArgument[0], Boolean.FALSE);
+			return parseBooleanArgument(splittedRawArgument);
 		}
+	}
+
+	private Argument parseBooleanArgument(String[] splittedRawArgument) {
+		if (splittedRawArgument.length < 2) {
+			return new Argument(splittedRawArgument[0], Boolean.FALSE);
+		} else {
+			return new Argument(splittedRawArgument[0],
+					Boolean.valueOf(splittedRawArgument[1]));
+		}
+	}
+
+	private Argument parseStringArgument(String[] splittedRawArgument) {
+		if (splittedRawArgument.length < 2) {
+			return new Argument(splittedRawArgument[0], "");
+		} else {
+			return new Argument(splittedRawArgument[0],
+					splittedRawArgument[1].trim());
+		}
+	}
+
+	private boolean isStringArgument(String argumentName) {
+		return schema.get(argumentName).equals(java.lang.String.class);
 	}
 
 	private void validateArgumentAgainstSchema(String[] splittedRawArgument) {

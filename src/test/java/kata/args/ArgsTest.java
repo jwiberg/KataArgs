@@ -62,9 +62,15 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void booleanArgumentsShouldBeParsedBoolean() {
+	public void emptyBooleanArgumentsShouldBeParsedBooleanFalse() {
 		String input = "-s -h -b";
 		assertEquals(java.lang.Boolean.class, args.parse(input).get("b")
 				.getClass());
+	}
+
+	@Test
+	public void booleanArgumentsTrueShouldBeParsedBooleanTrue() {
+		String input = "-s -h -b true";
+		assertEquals(java.lang.Boolean.TRUE, args.parse(input).get("b"));
 	}
 }
