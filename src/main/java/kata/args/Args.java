@@ -35,7 +35,7 @@ public class Args {
 				continue;
 			Argument argument = null;
 			argument = parseArgument(rawArgument);
-			arguments.put(argument.name, argument.value);
+			arguments.put(argument.getName(), argument.getValue());
 		}
 		return arguments;
 	}
@@ -77,16 +77,6 @@ public class Args {
 	private void validateArgumentAgainstSchema(String[] splittedRawArgument) {
 		if (!schema.keySet().contains(splittedRawArgument[0])) {
 			throw new ArgumentNotDefined(splittedRawArgument[0]);
-		}
-	}
-
-	private class Argument {
-		final String name;
-		final Object value;
-
-		public Argument(String name, Object value) {
-			this.name = name;
-			this.value = value;
 		}
 	}
 
