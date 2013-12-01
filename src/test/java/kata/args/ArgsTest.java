@@ -1,47 +1,70 @@
 package kata.args;
 
 import static org.junit.Assert.assertEquals;
+import kata.args.Args.ArgumentNotDefined;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class ArgsTest {
 
+	private Args args;
+
+	@Before
+	public void before() throws Exception {
+		String schema = "s:String h:String b:Boolean";
+		this.args = new Args(schema);
+	}
+
 	@Test
 	public void emptyInputIsParsedToEmptyArguments() {
-		assertEquals(0, new Args().parse("").size());
+		assertEquals(0, args.parse("").size());
 	}
 
 	@Test
 	public void nullInputIsParsedToEmptyArguments() {
-		assertEquals(0, new Args().parse(null).size());
+		assertEquals(0, args.parse(null).size());
 	}
 
 	@Test
 	public void stringArgumentWithoutValueIsParsedToEmptyString() {
-		assertEquals("", new Args().parse("-s").get("s"));
+		assertEquals("", args.parse("-s").get("s"));
 	}
 
 	@Test
 	public void simpleStringArgumentIsParsedToString() {
-		assertEquals("string", new Args().parse("-s string").get("s"));
+		assertEquals("string", args.parse("-s string").get("s"));
 	}
 
 	@Test
 	public void twoSimpleStringArgumentsAreParsedToTwoStrings() {
 		String input = "-s string1 -h string2";
-		assertEquals("string1", new Args().parse(input).get("s"));
-		assertEquals("string2", new Args().parse(input).get("h"));
+		assertEquals("string1", args.parse(input).get("s"));
+		assertEquals("string2", args.parse(input).get("h"));
 	}
 
 	@Test
 	public void stringArgumentsWithSpaceShouldBeParsedToString() {
 		String input = "-s string1 string2 -h string12 string22";
-		assertEquals("string12 string22", new Args().parse(input).get("h"));
+		assertEquals("string12 string22", args.parse(input).get("h"));
 	}
 
 	@Test
 	public void stringArgumentWithNoValueIsParsedToEmptyString() {
-		String input = "-s -h string12 string22";
-		assertEquals("", new Args().parse(input).get("s"));
+		String input = "-s -h string";
+		assertEquals("", args.parse(input).get("s"));
+	}
+
+	@Test(expected = ArgumentNotDefined.class)
+	public void argumentsShouldBeNotBeAssignedToNamesNotDefinedInSchema() {
+		String input = "-p string";
+		args.parse(input);
+	}
+
+	@Test
+	public void booleanArgumentsShouldBeParsedBoolean() {
+		String input = "-s -h -b";
+		assertEquals(java.lang.Boolean.class, args.parse(input).get("b")
+				.getClass());
 	}
 }

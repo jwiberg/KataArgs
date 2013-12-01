@@ -6,6 +6,19 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 public class Args {
+	private final Map<String, Class<? extends Object>> schema = new HashMap<>();
+
+	// String schema;
+
+	public Args(String schemaString) throws ClassNotFoundException {
+		String[] splittedSchema = schemaString.split("\\s");
+		for (String schemaItem : splittedSchema) {
+			String key = schemaItem.split(":")[0];
+			String clazz = schemaItem.split(":")[1];
+			schema.put(key, Class.forName("java.lang." + clazz));
+		}
+	}
+
 	public Map<String, Object> parse(String input) {
 		Map<String, Object> arguments = new HashMap<String, Object>();
 
@@ -19,21 +32,54 @@ public class Args {
 	private Map<String, Object> parseArguments(String input) {
 		Map<String, Object> arguments = new HashMap<>();
 		for (String rawArgument : input.split("-")) {
-			String[] parsedArgument = parseArgument(rawArgument);
-			arguments.put(parsedArgument[0], parsedArgument[1].trim());
+			// First item should be passed (its empty, always)
+			if (rawArgument.trim().length() == 0)
+				continue;
+			Argument argument = null;
+			argument = parseArgument(rawArgument);
+			arguments.put(argument.name, argument.value);
 		}
 		return arguments;
 	}
 
-	private String[] parseArgument(String rawArgument) {
-		String[] parsedArgument = new String[] { "", "" };
+	private Argument parseArgument(String rawArgument) {
 		String[] splittedRawArgument = rawArgument.split("\\s", 2);
-		if (splittedRawArgument.length < 2) {
-			parsedArgument[0] = splittedRawArgument[0];
+
+		validateArgumentAgainstSchema(splittedRawArgument);
+
+		if (schema.get(splittedRawArgument[0]).equals(java.lang.String.class)) {
+			if (splittedRawArgument.length < 2) {
+				return new Argument(splittedRawArgument[0], "");
+			} else {
+				return new Argument(splittedRawArgument[0],
+						splittedRawArgument[1].trim());
+			}
 		} else {
-			parsedArgument[0] = splittedRawArgument[0];
-			parsedArgument[1] = splittedRawArgument[1];
+			return new Argument(splittedRawArgument[0], Boolean.FALSE);
 		}
-		return parsedArgument;
+	}
+
+	private void validateArgumentAgainstSchema(String[] splittedRawArgument) {
+		if (!schema.keySet().contains(splittedRawArgument[0])) {
+			throw new ArgumentNotDefined(splittedRawArgument[0]);
+		}
+	}
+
+	private class Argument {
+		final String name;
+		final Object value;
+
+		public Argument(String name, Object value) {
+			this.name = name;
+			this.value = value;
+		}
+	}
+
+	public class ArgumentNotDefined extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public ArgumentNotDefined(String message) {
+			super(message);
+		}
 	}
 }
